@@ -1,29 +1,17 @@
-name: Run Tests
+steps:
+  - uses: actions/checkout@v4
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  - uses: actions/setup-node@v4
+    with:
+      node-version: 20
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
+  - run: npm install
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  - run: npm test
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
+  - run: npm install -g vercel
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm test
+  - run: vercel --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"
+    env:
+      VERCEL_ORG_ID: ${{ secrets.ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.PROJECT_ID }}
